@@ -1,0 +1,201 @@
+/* ========== 1. COLOURS & BASE ========== */
+:root {
+  --bg: #fbd5e0;        /* baby pink */
+  --bg2: #fde8ef;       /* lighter pink glow */
+  --ink: #8a2b4d;       /* title colour */
+  --soft: #c25a7e;      /* "tap" text + borders */
+  --env: #f4a9c0;       /* envelope sides */
+  --env-dark: #e88fab;  /* envelope back */
+  --env-flap: #f7b9cc;  /* envelope flap */
+  --paper: #fffafb;     /* letter paper */
+  --paper-ink: #4a2433; /* letter text */
+  --seal: #c93f6d;      /* heart seal */
+
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+  background: radial-gradient(circle at 50% 30%, var(--bg2), var(--bg) 70%);
+  background-color: var(--bg);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--ink);
+  overflow: hidden;
+}
+
+/* ========== 2. FRONT PAGE LAYOUT ========== */
+.stage {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2vh;
+  padding: 12px;
+}
+
+/* Curved title */
+.arc { width: min(92vw, 760px); height: auto; overflow: visible; }
+.arc text {
+  font-family: 'Great Vibes', 'Brush Script MT', cursive;
+  font-size: 60px;
+  fill: var(--ink);
+}
+@media (max-width: 520px) { .arc text { font-size: 56px; } }
+
+/* ========== 3. ENVELOPE ========== */
+.env-wrap {
+  perspective: 900px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  margin-top: 2vh;
+}
+
+.env {
+  position: relative;
+  width: min(78vw, 400px);
+  aspect-ratio: 1.5;
+  animation: float 3.2s ease-in-out infinite;
+}
+@keyframes float { 50% { transform: translateY(-10px); } }
+
+.env .back {
+  position: absolute; inset: 0;
+  background: var(--env-dark);
+  border-radius: 10px;
+  box-shadow: 0 18px 30px rgba(138, 43, 77, .22);
+}
+
+.env .pocket {
+  position: absolute; inset: 0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.env .pocket::before,
+.env .pocket::after {
+  content: "";
+  position: absolute; bottom: 0;
+  width: 60%; height: 100%;
+  background: var(--env);
+}
+.env .pocket::before { left: 0;  clip-path: polygon(0 0, 100% 100%, 0 100%); }
+.env .pocket::after  { right: 0; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+
+.env .bottom {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 62%;
+  background: #f09ab6;
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  border-radius: 0 0 10px 10px;
+}
+
+.env .flap {
+  position: absolute; left: 0; right: 0; top: 0;
+  height: 58%;
+  background: var(--env-flap);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top;
+  transition: transform .6s;
+}
+.env-wrap:hover .flap { transform: rotateX(25deg); }
+
+.env .heart {
+  position: absolute; left: 50%; top: 44%;
+  width: 44px; height: 44px;
+  margin: -22px 0 0 -22px;
+  background: var(--seal);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  color: #fff; font-size: 22px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .2);
+}
+
+/* "tap to open" text */
+.tap {
+  margin-top: 18px;
+  font-family: 'Great Vibes', cursive;
+  font-size: 34px;
+  color: var(--soft);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 50% { opacity: .45; } }
+
+/* ========== 4. LETTER OVERLAY ========== */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(138, 43, 77, .35);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s;
+  z-index: 5;
+  padding: 16px 14px 70px;
+}
+.overlay.open { opacity: 1; pointer-events: auto; }
+
+.letter {
+  width: min(100%, 640px);
+  max-height: 100%;
+  overflow-y: auto;
+  background: var(--paper);
+  background-image: linear-gradient(#fff 0, var(--paper) 40px);
+  color: var(--paper-ink);
+  border-radius: 8px;
+  padding: 34px 28px 40px;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, .28);
+  font-size: 20px;
+  line-height: 1.6;
+  transform: translateY(60px) scale(.92);
+  transition: transform .6s cubic-bezier(.2, .9, .3, 1.1);
+}
+.overlay.open .letter { transform: none; }
+
+.letter h2 {
+  font-family: 'Great Vibes', cursive;
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.2;
+  margin: 0 0 14px;
+  color: var(--ink);
+}
+.letter p { margin: 0 0 1em; }
+.letter .ps { border-top: 1px dashed var(--soft); padding-top: 14px; }
+.letter .sign {
+  font-family: 'Great Vibes', cursive;
+  font-size: 32px;
+  color: var(--ink);
+}
+
+/* ========== 5. CLOSE BUTTON (bottom left) ========== */
+.close {
+  position: fixed;
+  left: max(18px, env(safe-area-inset-left, 0px));
+  bottom: max(18px, env(safe-area-inset-bottom, 0px));
+  z-index: 6;
+  background: var(--paper);
+  color: var(--ink);
+  border: 2px solid var(--soft);
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-family: 'Great Vibes', cursive;
+  font-size: 28px;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s;
+}
+.overlay.open ~ .close { opacity: 1; pointer-events: auto; }
+
+/* ========== 6. ACCESSIBILITY ========== */
+button:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
